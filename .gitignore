@@ -1,0 +1,8 @@
+
+/bot/__pycache__
+/bot/cogs/__pycache__
+/data/__pycache__
+/Utils/__pycache__
+/bot/logs
+data/database.db
+data/messages.db
