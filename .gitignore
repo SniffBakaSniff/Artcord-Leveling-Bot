@@ -6,3 +6,4 @@
 /bot/logs
 data/database.db
 data/messages.db
+.env

@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import sqlite3
 import os
+from dotenv import load_dotenv
 import requests
 import sys
 from datetime import datetime
@@ -14,7 +15,10 @@ from Utils import db_initializer as db
 from Utils import message_db_initializer as mdb
 
 
-TOKEN = 'Secret'
+load_dotenv(dotenv_path='../.env')
+
+TOKEN = os.getenv('token')
+
 bot = commands.Bot(command_prefix='/', intents=discord.Intents.all())
 db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'database.db')
 message_db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'messages.db')
@@ -26,7 +30,7 @@ base_api_url = 'http://localhost:5000/api/'
 app = web.Application()
 cors = setup(app)
 
-api_key = 'Secret'
+api_key = os.getenv('api_key')
 headers = {'Authorization': api_key}
 response = requests.get('http://127.0.0.1:5000/api', headers=headers)
 

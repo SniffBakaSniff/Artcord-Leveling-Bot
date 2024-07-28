@@ -5,6 +5,7 @@ import sqlite3
 import os
 import io
 import requests
+from dotenv import load_dotenv
 import datetime
 from functools import wraps
 import sys
@@ -16,8 +17,11 @@ import matplotlib.pyplot as plt
 from pytz import timezone, utc
 import pytz
 
+load_dotenv(dotenv_path='../.env')
+
+
 app = Flask(__name__, static_url_path='/static', static_folder='static', template_folder='templates')
-app.secret_key = 'Secret'
+app.secret_key = os.getenv('api_key')
 CORS(app)
 db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'database.db')
 message_db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'messages.db')
@@ -54,6 +58,7 @@ def serve_image(filename):
     return send_from_directory('static/images', filename)
 
 @app.route('/artcordlv/api/database', methods=['GET'])
+@api_key_required
 def view_database():
     try:
         with sqlite3.connect(db_path) as conn:
@@ -110,6 +115,7 @@ def get_db():
 
 
 @app.route('/artcordlv/api/message_database_info', methods=['GET'])
+@api_key_required
 def database_info():
     conn = get_db()
     c = conn.cursor()
@@ -125,6 +131,7 @@ def database_info():
     return jsonify({'messages': data})
 
 @app.route('/artcordlv/api/message_data', methods=['GET'])
+@api_key_required
 def message_data():
     conn = get_db()
     c = conn.cursor()
@@ -251,6 +258,7 @@ def get_user_data_from_db(user_id=None, username=None):
 
 
 @app.route('/artcordlv/users', methods=['GET'])
+@api_key_required
 def get_user():
     user_id = request.args.get('user_id', type=int)
     username = request.args.get('username', type=str)
@@ -286,6 +294,7 @@ def get_user():
         return jsonify({'error': 'User not found'}), 404
     
 @app.route('/artcordlv/api/leaderboard', methods=['GET'])
+@api_key_required
 def leaderboard():
     try:
         with sqlite3.connect(db_path) as conn:
@@ -358,8 +367,8 @@ def generate_card(user_data, rank=None):
         username_font_size = 80
         username_text = user_data['username']
 
-    username_font = ImageFont.truetype("arial.ttf", username_font_size)
-    details_font = ImageFont.truetype("arial.ttf", 43)
+    username_font = ImageFont.truetype("../Utils/Arial.ttf", username_font_size)
+    details_font = ImageFont.truetype("../Utils/Arial.ttf", 43)
 
     # Draw Profile Picture
     response = requests.get(user_data['avatar_url'])
@@ -463,9 +472,9 @@ def generate_leaderboard(entries):
 
     # Load fonts
     username_font_size = 24
-    username_font = ImageFont.truetype("arial.ttf", username_font_size)
+    username_font = ImageFont.truetype("../Utils/Arial.ttf", username_font_size)
     details_font_size = 20
-    details_font = ImageFont.truetype("arial.ttf", details_font_size)
+    details_font = ImageFont.truetype("../Utils/Arial.ttf", details_font_size)
 
     # Calculate entry height slightly smaller than original
     entry_height = (height - (num_entries - 1) * gap_height) // num_entries - 5 
@@ -564,6 +573,7 @@ def draw_rounded_rectangle(draw, xy, color, radius, outline=None, width=0):
 
 
 @app.route('/card')
+#Example url: /card?<user_id | username>=<int | string>
 def card():
     user_id = request.args.get('user_id', type=int)
     username = request.args.get('username', type=str)
@@ -575,7 +585,7 @@ def card():
     if not user_data:
         return jsonify({'error': 'User not found'}), 404
 
-    leaderboard_api_url = f'http://127.0.0.1:5000/artcordlvapi/leaderboard'
+    leaderboard_api_url = f'http://127.0.0.1:5000/artcordlv/api/leaderboard'
     response = requests.get(leaderboard_api_url)
     if response.status_code == 200:
         leaderboard_data = response.json()
