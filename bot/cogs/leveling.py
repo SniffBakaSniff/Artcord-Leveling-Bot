@@ -439,6 +439,7 @@ class LevelingCog(Cog):
     # Command: Leaderboard command to show top users by XP
     @commands.hybrid_command(name="leaderboard", description="Get the leaderboard")
     async def leaderboard(self, ctx):
+        await ctx.defer()
         leaderboard_url = 'http://127.0.0.1:5000/img/leaderboard'
         response = requests.get(leaderboard_url)
 

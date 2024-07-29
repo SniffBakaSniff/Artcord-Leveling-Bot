@@ -7,3 +7,5 @@
 data/database.db
 data/messages.db
 .env
+/venv
+/bot/venv

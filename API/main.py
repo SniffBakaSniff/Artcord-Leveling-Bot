@@ -26,6 +26,10 @@ CORS(app)
 db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'database.db')
 message_db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'messages.db')
 
+base_api_url = 'http://localhost:5000/artcordlv/api/'
+
+api_key = os.getenv('api_key')
+headers = {'Authorization': api_key}
 
 def api_key_required(f):
     @wraps(f)
@@ -586,7 +590,7 @@ def card():
         return jsonify({'error': 'User not found'}), 404
 
     leaderboard_api_url = f'http://127.0.0.1:5000/artcordlv/api/leaderboard'
-    response = requests.get(leaderboard_api_url)
+    response = requests.get(leaderboard_api_url, headers=headers)
     if response.status_code == 200:
         leaderboard_data = response.json()
         for user in leaderboard_data:
@@ -609,7 +613,7 @@ def card():
 def leaderboard_img():
     # Fetch leaderboard data from an API endpoint
     leaderboard_api_url = 'http://127.0.0.1:5000/artcordlv/api/leaderboard'
-    response = requests.get(leaderboard_api_url)
+    response = requests.get(leaderboard_api_url, headers=headers)
     
     if response.status_code == 200:
         leaderboard_data = response.json()

@@ -25,14 +25,14 @@ message_db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
 quests_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'quests.json')
 
 print(db_path, "| Main Bot File")
-base_api_url = 'http://localhost:5000/api/'
+base_api_url = 'http://localhost:5000/artcordlv/api/'
 
 app = web.Application()
 cors = setup(app)
 
 api_key = os.getenv('api_key')
 headers = {'Authorization': api_key}
-response = requests.get('http://127.0.0.1:5000/api', headers=headers)
+response = requests.get('http://127.0.0.1:5000/', headers=headers)
 
 
 def setup_logging():
